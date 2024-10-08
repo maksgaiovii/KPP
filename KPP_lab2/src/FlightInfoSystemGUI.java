@@ -1,13 +1,14 @@
+import Entities.*;
+import Handlers.*;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.time.format.FormatStyle;
+import java.util.HashSet;
+import java.util.Set;
+import java.time.format.DateTimeFormatter;
 
 public class FlightInfoSystemGUI extends JFrame {
 
@@ -17,10 +18,11 @@ public class FlightInfoSystemGUI extends JFrame {
     private JTable resultsTable;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> sorter;
+    Flight[] flights= FlightGenerator.generateRandomFlights(20);
 
     public FlightInfoSystemGUI() {
         // Initialize the frame
-        setTitle("Flight Information System");
+        setTitle("Entities.Flight Information System");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -30,8 +32,9 @@ public class FlightInfoSystemGUI extends JFrame {
         JPanel resultPanel = new JPanel(new BorderLayout());
 
         // Components for departure and destination selection
-        departureComboBox = new JComboBox<>(new String[]{"New York", "London", "Paris", "Tokyo", "Sydney"});
-        destinationComboBox = new JComboBox<>(new String[]{"New York", "London", "Paris", "Tokyo", "Sydney"});
+        String[] uniqueCities = getUniqueCities();
+        departureComboBox = new JComboBox<>(uniqueCities);
+        destinationComboBox = new JComboBox<>(uniqueCities);
 
         // Date and time input
         dateSpinner = new JSpinner(new SpinnerDateModel());
@@ -53,7 +56,7 @@ public class FlightInfoSystemGUI extends JFrame {
         inputPanel.add(filterButton);
 
         // Table for showing results
-        String[] columnNames = {"Flight", "Departure Time", "Arrival Time", "Price", "Duration"}; // Add Duration
+        String[] columnNames = {"Entities.Flight", "Departure Time", "Arrival Time", "Price", "Duration"}; // Add Duration
         tableModel = new NonEditableTableModel(new Object[0][0], columnNames);
         resultsTable = new JTable(tableModel);
 
@@ -64,107 +67,46 @@ public class FlightInfoSystemGUI extends JFrame {
         // Add table to result panel
         resultPanel.add(new JScrollPane(resultsTable), BorderLayout.CENTER);
 
-        // Add action listeners for buttons
-        searchButton.addActionListener(new SearchButtonListener());
-        filterButton.addActionListener(new FilterButtonListener());
+        // Create an instance of SearchHandler
+        SearchHandler searchHandler = new SearchHandler(flights, tableModel, departureComboBox, destinationComboBox);
+        FilterHandler filterHandler = new FilterHandler(sorter);
+        searchButton.addActionListener(searchHandler);
+        filterButton.addActionListener(filterHandler);
 
         // Add panels to the frame
         add(inputPanel, BorderLayout.NORTH);
         add(resultPanel, BorderLayout.CENTER);
+        //loadAllFlights();
     }
 
-    // ActionListener for search button
-    private class SearchButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Clear previous results
-            tableModel.setRowCount(0);
-            sorter.setRowFilter(null);
-            // Get user input
-            String departure = (String) departureComboBox.getSelectedItem();
-            String destination = (String) destinationComboBox.getSelectedItem();
-            Object date = dateSpinner.getValue();
+    private String[] getUniqueCities() {
+        Set<String> citySet = new HashSet<>();
 
-            // Format the date
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        // Extract unique departure and arrival cities
+        for (Flight flight : flights) {
+            citySet.add(flight.getDepartureCity());
+            citySet.add(flight.getArrivalCity());
+        }
 
-            // Mock search results (in a real app, you'd query your data source)
-            String[][] data = {
-                    {"Flight 101", dateFormat.format(date), "10:00", "14:00", "$500", "4"},
-                    {"Flight 202", dateFormat.format(date), "12:00", "16:00", "$450", "4"},
-                    {"Flight 303", dateFormat.format(date), "15:00", "19:00", "$600", "4"},
+        return citySet.toArray(new String[0]); // Convert set to array
+    }
+
+    private void loadAllFlights() {
+        tableModel.setRowCount(0); // Clear previous results
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+
+        for (Flight flight : flights) {
+            String[] row = {
+                    flight.getPlaneType(), // Assuming you want to show flight number
+                    flight.getDepartureTime().format(dateTimeFormatter),
+                    flight.getArrivalTime().format(dateTimeFormatter),
+                    "$" + flight.getPrice()+ flight.getDuration()
             };
-
-            // Add mock data to the table (real data would be fetched here)
-            for (String[] row : data) {
-                tableModel.addRow(row);
-            }
+            tableModel.addRow(row);
         }
     }
 
-    // ActionListener for filter button
-    private class FilterButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Create dialog to filter by price or duration
-            JPanel panel = new JPanel(new GridLayout(2, 2));
-            panel.add(new JLabel("Max Price:"));
-            JTextField priceField = new JTextField();
-            panel.add(priceField);
-            panel.add(new JLabel("Max Duration (hours):"));
-            JTextField durationField = new JTextField();
-            panel.add(durationField);
 
-            int result = JOptionPane.showConfirmDialog(null, panel,
-                    "Enter Price and Duration Filters", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    String priceText = priceField.getText().trim();
-                    String durationText = durationField.getText().trim();
-
-                    List<RowFilter<Object, Object>> filters = new ArrayList<>();
-
-                    // If price is entered, apply price filter
-                    if (!priceText.isEmpty()) {
-                        double maxPrice = Double.parseDouble(priceText.replace("$", ""));
-                        RowFilter<Object, Object> priceFilter = new RowFilter<Object, Object>() {
-                            @Override
-                            public boolean include(Entry<? extends Object, ? extends Object> entry) {
-                                String priceString = (String) entry.getValue(3);
-                                double price = Double.parseDouble(priceString.replace("$", ""));
-                                return price <= maxPrice;
-                            }
-                        };
-                        filters.add(priceFilter);
-                    }
-
-                    // If duration is entered, apply duration filter
-                    if (!durationText.isEmpty()) {
-                        double maxDuration = Double.parseDouble(durationText);
-                        RowFilter<Object, Object> durationFilter = new RowFilter<Object, Object>() {
-                            @Override
-                            public boolean include(Entry<? extends Object, ? extends Object> entry) {
-                                String durationString = (String) entry.getValue(4); // Assuming duration is in hours
-                                double duration = Double.parseDouble(durationString);
-                                return duration <= maxDuration;
-                            }
-                        };
-                        filters.add(durationFilter);
-                    }
-
-                    // Apply the filters (if any were added)
-                    if (!filters.isEmpty()) {
-                        sorter.setRowFilter(RowFilter.andFilter(filters));
-                    } else {
-                        sorter.setRowFilter(null); // Clear filters if none are applied
-                    }
-
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Invalid price or duration format.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
 
 
     public static void main(String[] args) {
