@@ -22,7 +22,7 @@ public class FlightInfoSystemGUI extends JFrame {
 
     public FlightInfoSystemGUI() {
         // Initialize the frame
-        setTitle("Entities.Flight Information System");
+        setTitle("Flight Information System");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -56,7 +56,7 @@ public class FlightInfoSystemGUI extends JFrame {
         inputPanel.add(filterButton);
 
         // Table for showing results
-        String[] columnNames = {"Entities.Flight", "Departure Time", "Arrival Time", "Price", "Duration"}; // Add Duration
+        String[] columnNames = {"Flight", "Departure Time", "Arrival Time", "Price", "Duration"}; // Add Duration
         tableModel = new NonEditableTableModel(new Object[0][0], columnNames);
         resultsTable = new JTable(tableModel);
 
@@ -68,7 +68,7 @@ public class FlightInfoSystemGUI extends JFrame {
         resultPanel.add(new JScrollPane(resultsTable), BorderLayout.CENTER);
 
         // Create an instance of SearchHandler
-        SearchHandler searchHandler = new SearchHandler(flights, tableModel, departureComboBox, destinationComboBox);
+        SearchHandler searchHandler = new SearchHandler(flights, tableModel, departureComboBox, destinationComboBox,sorter);
         FilterHandler filterHandler = new FilterHandler(sorter);
         searchButton.addActionListener(searchHandler);
         filterButton.addActionListener(filterHandler);
@@ -76,7 +76,7 @@ public class FlightInfoSystemGUI extends JFrame {
         // Add panels to the frame
         add(inputPanel, BorderLayout.NORTH);
         add(resultPanel, BorderLayout.CENTER);
-        //loadAllFlights();
+        loadAllFlights();
     }
 
     private String[] getUniqueCities() {
@@ -100,7 +100,7 @@ public class FlightInfoSystemGUI extends JFrame {
                     flight.getPlaneType(), // Assuming you want to show flight number
                     flight.getDepartureTime().format(dateTimeFormatter),
                     flight.getArrivalTime().format(dateTimeFormatter),
-                    "$" + flight.getPrice()+ flight.getDuration()
+                    "$" + flight.getPrice(), flight.getFormattedDuration()
             };
             tableModel.addRow(row);
         }

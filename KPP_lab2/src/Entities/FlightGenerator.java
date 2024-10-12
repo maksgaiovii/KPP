@@ -16,7 +16,7 @@ public class FlightGenerator {
 
     public static Flight generateRandomFlight() {
         // Generate a flight number
-        String flightNumber = "Entities.Flight " + flightCounter++;
+        String flightNumber = "Fl " + flightCounter++;
 
         // Select random departure and arrival cities
         String departureCity = CITIES[RANDOM.nextInt(CITIES.length)];
@@ -28,7 +28,7 @@ public class FlightGenerator {
         // Generate random departure time within the next month
         LocalDateTime departureTime = LocalDateTime.now().plusDays(RANDOM.nextInt(30)).plusHours(RANDOM.nextInt(24));
         // Generate arrival time that is at least 1 hour later than departure time
-        LocalDateTime arrivalTime = departureTime.plusHours(1).plusMinutes(RANDOM.nextInt(59));
+        LocalDateTime arrivalTime = departureTime.plusHours(RANDOM.nextInt(12)).plusMinutes(RANDOM.nextInt(59));
 
         // Generate random price between $100 and $1000
         int price = 100 + RANDOM.nextInt(1200);

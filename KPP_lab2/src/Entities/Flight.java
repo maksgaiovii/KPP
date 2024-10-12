@@ -32,6 +32,7 @@ public class Flight {
 
     // Method to get the duration in a human-readable format (hours and minutes)
     public String getFormattedDuration() {
+        var s=getDuration();
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
         return hours + "h " + minutes + "m";
@@ -59,5 +60,7 @@ public class Flight {
     public String getPlaneType() { return planeType; }
     public void setPlaneType(String planeType) { this.planeType = planeType; }
 
-    public Duration getDuration() { return duration; }
+    public Duration getDuration() {
+            duration=Duration.between(this.departureTime, this.arrivalTime);
+            return duration; }
 }
