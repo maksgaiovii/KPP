@@ -4,7 +4,7 @@ public class Main {
         String fileName = "randomWords.txt";
 
         // Генеруємо файл з 100 випадковими словами
-        EmailGenerator.generateRandomFile(fileName, 20);
+        //EmailGenerator.generateRandomFile(fileName, 20);
 
         // Фільтруємо валідні електронні адреси
         System.out.println("Фільтрація валідних електронних адрес:");
