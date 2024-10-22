@@ -1,0 +1,28 @@
+License Plate: AA1234BB
+Brand: Toyota
+Year: 2015
+------------------------
+License Plate: BC5678DE
+Brand: Honda
+Year: 2008
+------------------------
+License Plate: AA1234BB
+Brand: Toyota
+Year: 2015
+------------------------
+License Plate: BC5678DE
+Brand: Honda
+Year: 2008
+------------------------
+License Plate: AA1234BB
+Brand: Toyota
+Year: 2015
+------------------------
+License Plate: AA1234BB
+Brand: Toyota
+Year: 2015
+------------------------
+License Plate: AA1234BB
+Brand: Toyota
+Year: 2015
+------------------------
