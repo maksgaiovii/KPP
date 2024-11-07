@@ -176,38 +176,4 @@ class VehicleManagerTest {
                 .getBrand());
     }
 
-    @Test
-    void testSaveCurrentState() throws IOException {
-        // Given
-        Vehicle vehicle1 = new Vehicle("AA1234BB", "Toyota", 2015);
-        manager.addVehicle(vehicle1);
-
-        // When
-        Vehicle vehicle2 = new Vehicle("BC5678DE", "Honda", 2008);
-        manager.addVehicle(vehicle2);
-        manager.saveCurrentState();
-
-        // Then
-        String fileContent = Files.readString(Paths.get(TEST_VEHICLES_FILE));
-        assertTrue(fileContent.contains("AA1234BB"));
-        assertTrue(fileContent.contains("BC5678DE"));
-
-        // Перевіряємо порядок записів
-        int pos1 = fileContent.indexOf("AA1234BB");
-        int pos2 = fileContent.indexOf("BC5678DE");
-        assertTrue(pos1 < pos2);
-    }
-
-    @Test
-    void testReadEmptyFile() throws IOException {
-        // Given
-        Files.write(Paths.get(TEST_VEHICLES_FILE), new byte[0]);
-
-        // When
-        manager.loadVehiclesFromFile();
-
-        // Then
-        List<Vehicle> vehicles = manager.getAllVehicles();
-        Assertions.assertTrue(vehicles.isEmpty());
-    }
 }

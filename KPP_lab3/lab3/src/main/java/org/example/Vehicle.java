@@ -1,12 +1,14 @@
 package org.example;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 
 public class Vehicle {
+    @Expose
     private String licensePlate;
 
+    @Expose
     private String brand;
 
-    @JsonIgnore
     private transient int year; // Не серіалізується
 
     public Vehicle(String licensePlate, String brand, int year) {
@@ -39,5 +41,15 @@ public class Vehicle {
     public void setYear(int year) {
         this.year = year;
     }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "licensePlate='" + licensePlate + '\'' +
+                ", brand='" + brand + '\'' +
+                ", year=" + year +
+                '}';
+    }
+
 }
 
