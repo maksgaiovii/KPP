@@ -1,2 +1,0 @@
-- !!org.example.Vehicle {brand: Toyota, licensePlate: AA1234BB, year: 2015}
-- !!org.example.Vehicle {brand: null, licensePlate: BC5678DE, year: 2008}

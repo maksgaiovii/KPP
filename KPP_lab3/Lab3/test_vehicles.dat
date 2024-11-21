@@ -1,0 +1,13 @@
+---
+- licensePlate: "ABC123"
+  brand: "Toyota"
+  owner:
+    firstName: "John"
+    lastName: "Doe"
+    age: 30
+- licensePlate: "XYZ789"
+  brand: "Honda"
+  owner:
+    firstName: "Jane"
+    lastName: "Smith"
+    age: 25
